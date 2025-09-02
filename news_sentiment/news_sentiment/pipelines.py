@@ -53,6 +53,8 @@ class NewsSentimentPipeline:
 
         scraped_at = datetime.now(timezone.utc).isoformat()
 
+        #placeholder for future sentiment score
+        sentiment = "N/A"
         self.writer.writerow([
             scraped_at,
             item.get("headline"),
@@ -60,5 +62,6 @@ class NewsSentimentPipeline:
             item.get("category"),
             url,
             published_raw,
+            sentiment,
         ])
         return item
