@@ -1,0 +1,134 @@
+[
+    {
+      "source": "Ars Technica",
+      "category": "technology",
+      "url": "https://feeds.arstechnica.com/arstechnica/index"
+    },
+  
+    {
+      "source": "BBC",
+      "category": "world",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+    },
+    {
+      "source": "BBC",
+      "category": "business",
+      "url": "https://feeds.bbci.co.uk/news/business/rss.xml"
+    },
+    {
+      "source": "BBC",
+      "category": "technology",
+      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"
+    },
+  
+    {
+      "source": "CNN",
+      "category": "business",
+      "url": "http://rss.cnn.com/rss/edition_business.rss"
+    },
+    {
+      "source": "CNN",
+      "category": "technology",
+      "url": "http://rss.cnn.com/rss/edition_technology.rss"
+    },
+    {
+      "source": "CNN",
+      "category": "world",
+      "url": "http://rss.cnn.com/rss/edition_world.rss"
+    },
+  
+    {
+      "source": "Engadget",
+      "category": "technology",
+      "url": "https://www.engadget.com/rss.xml"
+    },
+  
+    {
+      "source": "Hacker News",
+      "category": "technology",
+      "url": "https://news.ycombinator.com/rss"
+    },
+  
+    {
+      "source": "MarketWatch",
+      "category": "business",
+      "url": "http://feeds.marketwatch.com/marketwatch/topstories/"
+    },
+  
+    {
+      "source": "NPR",
+      "category": "world",
+      "url": "https://feeds.npr.org/1004/rss.xml"
+    },
+    {
+      "source": "NPR",
+      "category": "business",
+      "url": "https://feeds.npr.org/1006/rss.xml"
+    },
+    {
+      "source": "NPR",
+      "category": "technology",
+      "url": "https://feeds.npr.org/1019/rss.xml"
+    },
+  
+    {
+      "source": "NYTimes",
+      "category": "world",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+    },
+    {
+      "source": "NYTimes",
+      "category": "business",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+    },
+    {
+      "source": "NYTimes",
+      "category": "technology",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+    },
+  
+    {
+      "source": "Reuters",
+      "category": "business",
+      "url": "https://feeds.feedburner.com/Reuters/businessNews"
+    },
+    {
+      "source": "Reuters",
+      "category": "world",
+      "url": "https://feeds.feedburner.com/Reuters/worldNews"
+    },
+    {
+      "source": "Reuters",
+      "category": "technology",
+      "url": "https://feeds.feedburner.com/Reuters/technologyNews"
+    },
+  
+    {
+      "source": "TechCrunch",
+      "category": "technology",
+      "url": "https://techcrunch.com/feed/"
+    },
+  
+    {
+      "source": "The Guardian",
+      "category": "world",
+      "url": "https://www.theguardian.com/world/rss"
+    },
+    {
+      "source": "The Guardian",
+      "category": "business",
+      "url": "https://www.theguardian.com/uk/business/rss"
+    },
+    {
+      "source": "The Guardian",
+      "category": "technology",
+      "url": "https://www.theguardian.com/uk/technology/rss"
+    },
+  
+    {
+      "source": "The Verge",
+      "category": "technology",
+      "url": "https://www.theverge.com/rss/index.xml"
+    }
+  ]
+  
