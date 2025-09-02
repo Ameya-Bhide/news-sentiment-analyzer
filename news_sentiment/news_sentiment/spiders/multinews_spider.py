@@ -3,6 +3,7 @@ import json
 import scrapy
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
+
 class MultiNewsSpider(scrapy.Spider):
     name = "multinews"
     custom_settings = {
@@ -10,19 +11,20 @@ class MultiNewsSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
     }
 
-    def __init__(self, feeds_file=None, include_sources=None, include_categories=None, *args, **kwargs):
+    def __init__(self, feeds_file=None, source=None, category=None, *args, **kwargs):
         """
         Args (all optional):
           feeds_file: path to feeds.json (defaults to ./feeds.json in repo root)
-          include_sources: comma-separated filter, e.g. "Reuters,The Guardian"
-          include_categories: comma-separated filter, e.g. "business,world"
+          source: comma-separated filter, e.g. "Reuters,The Guardian"
+          category: comma-separated filter, e.g. "business,world"
         """
         super().__init__(*args, **kwargs)
         self.feeds = self._load_feeds(feeds_file)
 
         # optional filters
-        src_set = {s.strip().lower() for s in include_sources.split(",")} if include_sources else None
-        cat_set = {c.strip().lower() for c in include_categories.split(",")} if include_categories else None
+        src_set = {s.strip().lower() for s in source.split(",")} if source else None
+        cat_set = {c.strip().lower() for c in category.split(",")} if category else None
+
         if src_set or cat_set:
             before = len(self.feeds)
             self.feeds = [
@@ -33,7 +35,6 @@ class MultiNewsSpider(scrapy.Spider):
             self.logger.info(f"Filtered feeds: {before} -> {len(self.feeds)}")
 
     def _load_feeds(self, feeds_file):
-        # Locate file
         candidates = [feeds_file] if feeds_file else []
         candidates += ["feeds.json"]  # repo root default
         for path in candidates:
@@ -66,10 +67,12 @@ class MultiNewsSpider(scrapy.Spider):
             {"source": "Reuters", "category": "world", "url": "https://www.reuters.com/rssFeed/worldNews"}
         ]
 
-    # Scrapy 2.13+: use async start() (avoids deprecation warning)
     async def start(self):
         headers = {
-            "Accept": "application/rss+xml, application/atom+xml, text/xml;q=0.9, */*;q=0.8"
+        "Accept": "application/rss+xml,application/xml;q=0.9,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/135.0.0.0 Safari/537.36"
         }
         for feed in self.feeds:
             yield scrapy.Request(
