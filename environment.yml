@@ -53,7 +53,6 @@ dependencies:
   - packaging=25.0=pyh29332c3_1
   - pandas=2.3.2=py311h43d6402_0
   - parsel=1.10.0=pyhd8ed1ab_0
-  - pip=25.1=pyhc872135_2
   - protego=0.5.0=pyhd8ed1ab_0
   - pyasn1=0.6.1=pyhd8ed1ab_2
   - pyasn1-modules=0.4.2=pyhd8ed1ab_0
@@ -88,6 +87,7 @@ dependencies:
   - typing_extensions=4.15.0=pyhcf101f3_0
   - tzdata=2025b=h04d1e81_0
   - urllib3=2.5.0=pyhd8ed1ab_0
+  - vadersentiment=3.3.2=pyhd8ed1ab_1
   - w3lib=2.3.1=pyhd8ed1ab_0
   - wheel=0.45.1=py311hca03da5_0
   - xz=5.6.4=h80987f9_1
@@ -96,4 +96,6 @@ dependencies:
   - zope.interface=7.1.1=py311h80987f9_0
   - zstandard=0.23.0=py311h1a4646a_1
   - zstd=1.5.6=hfb09047_0
+  - pip:
+      - pip==25.2
 prefix: /opt/anaconda3/envs/news-sentiment

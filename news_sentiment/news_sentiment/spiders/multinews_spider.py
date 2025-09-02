@@ -6,18 +6,18 @@ FEEDS = [
     # BBC
     {"source": "BBC", "category": "business",   "url": "https://feeds.bbci.co.uk/news/business/rss.xml"},
     {"source": "BBC", "category": "technology", "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"},
-    {"source": "BBC", "category": "world",      "url": "https://feeds.bbci.co.uk/news/world/rss.xml"},
+    #{"source": "BBC", "category": "world",      "url": "https://feeds.bbci.co.uk/news/world/rss.xml"},
     #{"source": "BBC", "category": "sport",      "url": "https://feeds.bbci.co.uk/sport/rss.xml"},
 
     # CNN
     {"source": "CNN", "category": "business",   "url": "http://rss.cnn.com/rss/edition_business.rss"},
     {"source": "CNN", "category": "technology", "url": "http://rss.cnn.com/rss/edition_technology.rss"},
-    {"source": "CNN", "category": "world",      "url": "http://rss.cnn.com/rss/edition_world.rss"},
+    #{"source": "CNN", "category": "world",      "url": "http://rss.cnn.com/rss/edition_world.rss"},
 
     # Reuters
     {"source": "Reuters", "category": "business",   "url": "https://www.reuters.com/rssFeed/businessNews"},
     {"source": "Reuters", "category": "technology", "url": "https://www.reuters.com/rssFeed/technologyNews"},
-    {"source": "Reuters", "category": "world",      "url": "https://www.reuters.com/rssFeed/worldNews"},
+    #{"source": "Reuters", "category": "world",      "url": "https://www.reuters.com/rssFeed/worldNews"},
 ]
 
 class MultiNewsSpider(scrapy.Spider):
