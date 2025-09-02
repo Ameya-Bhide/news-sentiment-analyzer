@@ -22,3 +22,6 @@ venv/
 
 # Logs
 *.log
+
+# Track feeds.json
+!feeds.json
