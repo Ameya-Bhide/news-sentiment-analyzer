@@ -1,95 +1,122 @@
+import os
+import json
 import scrapy
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
-# Feeds you want to aggregate (add more any time)
-FEEDS = [
-    # BBC
-    {"source": "BBC", "category": "business",   "url": "https://feeds.bbci.co.uk/news/business/rss.xml"},
-    {"source": "BBC", "category": "technology", "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"},
-    #{"source": "BBC", "category": "world",      "url": "https://feeds.bbci.co.uk/news/world/rss.xml"},
-    #{"source": "BBC", "category": "sport",      "url": "https://feeds.bbci.co.uk/sport/rss.xml"},
-
-    # CNN
-    {"source": "CNN", "category": "business",   "url": "http://rss.cnn.com/rss/edition_business.rss"},
-    {"source": "CNN", "category": "technology", "url": "http://rss.cnn.com/rss/edition_technology.rss"},
-    #{"source": "CNN", "category": "world",      "url": "http://rss.cnn.com/rss/edition_world.rss"},
-
-    # Reuters
-    {"source": "Reuters", "category": "business",   "url": "https://www.reuters.com/rssFeed/businessNews"},
-    {"source": "Reuters", "category": "technology", "url": "https://www.reuters.com/rssFeed/technologyNews"},
-    #{"source": "Reuters", "category": "world",      "url": "https://www.reuters.com/rssFeed/worldNews"},
-]
-
 class MultiNewsSpider(scrapy.Spider):
     name = "multinews"
-    allowed_domains = ["bbci.co.uk","bbc.com","rss.cnn.com","cnn.com","reuters.com","feeds.reuters.com"]
-
     custom_settings = {
-        # polite + consistent encoding
         "DOWNLOAD_DELAY": 0.5,
-        "FEED_EXPORT_ENCODING": "utf-8",
-        # enable your pipeline if you want spider-local control (optional if already in settings.py)
-        "ITEM_PIPELINES": {"news_sentiment.pipelines.NewsSentimentPipeline": 300}
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
     }
 
-    def start_requests(self):
-        for feed in FEEDS:
+    def __init__(self, feeds_file=None, include_sources=None, include_categories=None, *args, **kwargs):
+        """
+        Args (all optional):
+          feeds_file: path to feeds.json (defaults to ./feeds.json in repo root)
+          include_sources: comma-separated filter, e.g. "Reuters,The Guardian"
+          include_categories: comma-separated filter, e.g. "business,world"
+        """
+        super().__init__(*args, **kwargs)
+        self.feeds = self._load_feeds(feeds_file)
+
+        # optional filters
+        src_set = {s.strip().lower() for s in include_sources.split(",")} if include_sources else None
+        cat_set = {c.strip().lower() for c in include_categories.split(",")} if include_categories else None
+        if src_set or cat_set:
+            before = len(self.feeds)
+            self.feeds = [
+                f for f in self.feeds
+                if (not src_set or f["source"].lower() in src_set)
+                and (not cat_set or f["category"].lower() in cat_set)
+            ]
+            self.logger.info(f"Filtered feeds: {before} -> {len(self.feeds)}")
+
+    def _load_feeds(self, feeds_file):
+        # Locate file
+        candidates = [feeds_file] if feeds_file else []
+        candidates += ["feeds.json"]  # repo root default
+        for path in candidates:
+            if path and os.path.isfile(path):
+                self.logger.info(f"Loading feeds from {path}")
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                feeds_list = data.get("feeds") if isinstance(data, dict) else data
+                if not isinstance(feeds_list, list):
+                    raise ValueError("feeds.json must be a list of {source, category, url} (or {'feeds': [...]})")
+
+                normalized = []
+                for i, row in enumerate(feeds_list):
+                    try:
+                        src = (row.get("source") or "").strip()
+                        url = (row.get("url") or "").strip()
+                        cat = (row.get("category") or "general").strip()
+                        if not src or not url:
+                            raise ValueError("missing source or url")
+                        normalized.append({"source": src, "category": cat, "url": url})
+                    except Exception as e:
+                        self.logger.warning(f"Skipping invalid feed row #{i}: {e}")
+                if normalized:
+                    return normalized
+                self.logger.warning("No valid feeds found in config; using built-in fallback.")
+
+        # Minimal fallback so job still runs
+        self.logger.warning("feeds.json not found; falling back to Reuters World.")
+        return [
+            {"source": "Reuters", "category": "world", "url": "https://www.reuters.com/rssFeed/worldNews"}
+        ]
+
+    # Scrapy 2.13+: use async start() (avoids deprecation warning)
+    async def start(self):
+        headers = {
+            "Accept": "application/rss+xml, application/atom+xml, text/xml;q=0.9, */*;q=0.8"
+        }
+        for feed in self.feeds:
             yield scrapy.Request(
                 url=feed["url"],
                 callback=self.parse_feed,
-                meta={"source": feed["source"], "category": feed["category"]},
+                cb_kwargs={"source": feed["source"], "category": feed["category"]},
+                headers=headers,
             )
 
-    def parse_feed(self, response):
-        source   = response.meta["source"]
-        category = response.meta["category"]
-
-        # Handle both RSS (<item>) and Atom (<entry>)
+    def parse_feed(self, response, source, category):
+        # RSS: <item>, Atom: <entry>
         items = response.css("item")
+        is_atom = False
         if not items:
             items = response.css("entry")
+            is_atom = True
 
-        for node in items:
-            title = node.css("title::text").get() or ""
-            title = title.strip()
+        for it in items:
+            title = it.css("title::text").get() or it.css("title *::text").get()
 
-            # Try multiple ways to get a link (RSS vs Atom differences)
-            link = (
-                node.css("link::text").get() or
-                node.css("link::attr(href)").get() or
-                node.css("guid::text").get() or
-                ""
-            )
-            link = link.strip()
+            if is_atom:
+                link = it.css("link::attr(href)").get() or it.css("link::text").get()
+                pub = it.css("updated::text").get() or it.css("published::text").get() or it.css("dc\\:date::text").get()
+            else:
+                link = it.css("link::text").get() or it.css("link::attr(href)").get()
+                pub = it.css("pubDate::text").get() or it.css("dc\\:date::text").get()
 
-            # Optional: strip tracking params like ?at_medium=RSS&...
-            link = self._strip_tracking(link, keys_to_remove={"at_medium", "at_campaign", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"})
+            if not title or not link:
+                continue
 
-            # Published date (if present)
-            published = (
-                node.css("pubDate::text").get() or  # RSS 2.0
-                node.css("updated::text").get() or  # Atom
-                node.css("dc\\:date::text").get()   # some feeds
-            )
-            if published:
-                published = published.strip()
+            yield {
+                "headline": title.strip(),
+                "source": source,
+                "category": category,
+                "url": self._strip_tracking_params(link.strip()),
+                "published": (pub or "").strip(),
+            }
 
-            if title and link:
-                yield {
-                    "headline": title,
-                    "source": source,
-                    "category": category,
-                    "url": link,
-                    "published": published,
-                }
-
-    def _strip_tracking(self, url, keys_to_remove):
-        if not url:
-            return url
+    @staticmethod
+    def _strip_tracking_params(url: str) -> str:
         try:
-            parts = urlparse(url)
-            q = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k not in keys_to_remove]
-            new_q = urlencode(q, doseq=True)
-            return urlunparse(parts._replace(query=new_q))
+            parsed = urlparse(url)
+            if not parsed.query:
+                return url
+            drop = {"utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
+                    "at_medium", "at_campaign", "CMP"}
+            clean_qs = [(k, v) for k, v in parse_qsl(parsed.query, keep_blank_values=True) if k not in drop]
+            return urlunparse(parsed._replace(query=urlencode(clean_qs, doseq=True)))
         except Exception:
             return url

@@ -53,7 +53,7 @@ class NewsSentimentPipeline:
                 published_dt = None
 
         # cutoff (keeps your “recent only” behavior)
-        cutoff = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        cutoff = datetime(2025, 1, 1, tzinfo=timezone.utc)
         if published_dt and published_dt < cutoff:
             return item  # skip old items
 
