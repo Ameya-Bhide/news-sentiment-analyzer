@@ -1,36 +1,33 @@
-name: Daily News Scraper
+name: Daily Scraper
 
 on:
   schedule:
-    - cron: "0 12 * * *"  # runs every day at 12:00 UTC
-  workflow_dispatch:       # allow manual trigger
+    - cron: "0 6 * * *"  # runs every day at 6:00 UTC
+  workflow_dispatch:      # allow manual trigger
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11"
+          environment-file: environment.yml
+          activate-environment: news-sentiment
+          auto-activate-base: false
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install scrapy vaderSentiment transformers torch pandas matplotlib
-
-      - name: Run Scrapy spider
+      - name: Run Scraper
+        shell: bash -l {0}
         run: |
           scrapy crawl multinews
 
       - name: Commit updated headlines.csv
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add headlines.csv
           git commit -m "Update headlines.csv [skip ci]" || echo "No changes to commit"
           git push
