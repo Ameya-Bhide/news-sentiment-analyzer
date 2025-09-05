@@ -1,29 +1,42 @@
-name: Daily Scraper
+name: Scrape Headlines
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "0 6 * * *"  # runs every day at 6:00 UTC
-  workflow_dispatch:      # allow manual trigger
+    - cron: "0 */6 * * *"   # runs every 6 hours
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install scrapy pandas matplotlib vaderSentiment transformers torch torchaudio torchvision tqdm requests lxml scikit-learn scipy
-          
-      - name: Run Scraper
-        shell: bash -l {0}
+          pip install scrapy vaderSentiment torch torchvision torchaudio transformers pandas matplotlib
+
+      - name: Debug working directory
         run: |
-          cd news-sentiment-analyzer/news_sentiment
+          pwd
+          ls -R
+
+      - name: Run spider
+        run: |
+          cd news_sentiment
           scrapy crawl multinews
 
-      - name: Commit updated headlines.csv
+      - name: Commit and push headlines.csv
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add headlines.csv
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add news_sentiment/headlines.csv
           git commit -m "Update headlines.csv [skip ci]" || echo "No changes to commit"
           git push
