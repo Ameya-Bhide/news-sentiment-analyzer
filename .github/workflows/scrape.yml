@@ -9,16 +9,10 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: List repo files
-        run: ls -R
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          environment-file: ./news_sentiment/environment.yml
-          activate-environment: news-sentiment
-          auto-activate-base: false
+      - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install scrapy pandas matplotlib vaderSentiment transformers torch torchaudio torchvision tqdm requests lxml scikit-learn scipy
 
       - name: Run Scraper
         shell: bash -l {0}
