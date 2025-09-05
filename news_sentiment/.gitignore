@@ -25,3 +25,6 @@ venv/
 
 # Track feeds.json
 !feeds.json
+
+# Track headlines.csv for GitHub Actions
+!headlines.csv
