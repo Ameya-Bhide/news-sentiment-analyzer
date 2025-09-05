@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 */6 * * *"   # runs every 6 hours
+permissions:
+  contents: write
 
 jobs:
   scrape:
@@ -40,3 +42,5 @@ jobs:
           git add news_sentiment/headlines.csv
           git commit -m "Update headlines.csv [skip ci]" || echo "No changes to commit"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
