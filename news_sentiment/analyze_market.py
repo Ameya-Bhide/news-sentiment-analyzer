@@ -1,4 +1,4 @@
-# news_sentiment/analyze_market.py
+# analyze_market.py
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,94 +6,101 @@ import yfinance as yf
 from scipy.stats import pearsonr
 import os
 
-def analyze_sentiment_vs_market(
-    sentiment_csv="daily_summary.csv",
-    tickers=["^GSPC", "^NDX", "^URTH"],
-    start="2024-01-01",
-    end=None
-):
-    # --- Load sentiment data ---
-    sentiment = pd.read_csv(sentiment_csv)
+def analyze_sentiment_vs_indexes(daily_csv="daily_summary.csv"):
+    # Load sentiment summary
+    daily = pd.read_csv(daily_csv)
+    daily["date"] = pd.to_datetime(daily["date"])
 
-    # Only business and technology categories
-    sentiment = sentiment[sentiment["category"].str.lower().isin(["business", "technology"])]
+    # Only keep business + technology categories
+    daily = daily[daily["category"].str.lower().isin(["business", "technology"])]
 
-    # Parse date
-    sentiment["date"] = pd.to_datetime(sentiment["date"])
-    daily = sentiment.groupby("date").agg(
-        avg_vader=("avg_vader", "mean"),
-        finbert_pos=("finbert_pos", "mean"),
-        finbert_neg=("finbert_neg", "mean"),
-        finbert_neu=("finbert_neu", "mean"),
-    ).reset_index()
+    # Aggregate across those categories per day
+    daily = (
+        daily.groupby("date")
+        .agg(
+            avg_vader=("avg_vader", "mean"),
+            finbert_pos=("finbert_pos", "mean"),
+            finbert_neg=("finbert_neg", "mean"),
+            finbert_neu=("finbert_neu", "mean"),
+        )
+        .reset_index()
+    )
 
-    results = []
+    # Choose indexes to analyze
+    indexes = {
+        "S&P 500": "^GSPC",
+        "NASDAQ": "^IXIC",
+        "Dow Jones": "^DJI",
+    }
 
     os.makedirs("market_plots", exist_ok=True)
 
-    for ticker in tickers:
-        print(f"\n📊 Analyzing {ticker}...")
+    for name, ticker in indexes.items():
+        print(f"\n=== {name} ({ticker}) ===")
 
-        # --- Load market data ---
-        market = yf.download(ticker, start=start, end=end, progress=False)
+        # Download market data
+        market = yf.download(ticker, start=daily["date"].min(), end=daily["date"].max(), progress=False)
+
         if market.empty:
             print(f"⚠️ No market data for {ticker}, skipping.")
             continue
 
-        # Flatten multi-index (if needed)
+        # --- Flatten MultiIndex if present ---
         if isinstance(market.columns, pd.MultiIndex):
-            market.columns = [col[0] for col in market.columns]
+            market.columns = ["_".join([c for c in col if c]).strip() for col in market.columns.values]
 
-        market = market[["Close"]].reset_index()
-        market["date"] = pd.to_datetime(market["Date"]).dt.date
-        market = market.drop(columns=["Date"])
-        market["return"] = market["Close"].pct_change()
+        # Find the close column (handles Close_^GSPC etc.)
+        close_col = None
+        for col in market.columns:
+            if col.lower().startswith("close"):
+                close_col = col
+                break
 
-        # --- Merge with sentiment ---
-        daily["date"] = pd.to_datetime(daily["date"]).dt.date
+        if close_col is None:
+            print(f"⚠️ Could not find a close column in market data for {ticker}. Columns were: {market.columns.tolist()}")
+            continue
+
+        # Reset index and rename
+        market = market.reset_index()[["Date", close_col]].rename(
+            columns={"Date": "date", close_col: "close"}
+        )
+        market["date"] = pd.to_datetime(market["date"])
+
+        # Compute daily returns (% change)
+        market["returns"] = market["close"].pct_change() * 100
+
+        # Merge with sentiment
         merged = pd.merge(daily, market, on="date", how="inner")
 
         if merged.empty:
-            print(f"⚠️ No overlap between sentiment and market for {ticker}.")
+            print(f"⚠️ No overlapping dates for {ticker}, skipping.")
             continue
 
         print(f"✅ Merged dataset for {ticker}, {len(merged)} days of overlap")
 
-        # --- Same-day correlations ---
-        for col in ["avg_vader", "finbert_pos"]:
-            r, p = pearsonr(merged[col].fillna(0), merged["return"].fillna(0))
-            print(f"Same-day: {col} vs {ticker} returns: r={r:.3f}, p={p:.4f}")
-            results.append([ticker, "same_day", col, r, p])
-
-        # --- Next-day correlations ---
-        merged["next_return"] = merged["return"].shift(-1)
-        for col in ["avg_vader", "finbert_pos"]:
-            r, p = pearsonr(merged[col].fillna(0), merged["next_return"].fillna(0))
-            print(f"Next-day: {col} vs {ticker} returns: r={r:.3f}, p={p:.4f}")
-            results.append([ticker, "next_day", col, r, p])
+        # --- Correlations ---
+        for var in ["avg_vader", "finbert_pos"]:
+            r, p = pearsonr(merged[var].fillna(0), merged["returns"].fillna(0))
+            print(f"{var} vs {ticker} returns: r = {r:.3f}, p = {p:.4f}")
 
         # --- Plot ---
         plt.figure(figsize=(10, 5))
-        plt.plot(merged["date"], merged["return"], label=f"{ticker} Returns", color="black")
-        plt.plot(merged["date"], merged["avg_vader"], label="VADER Avg Sentiment", color="blue")
-        plt.plot(merged["date"], merged["finbert_pos"]/100, label="FinBERT % Positive (scaled)", color="green")
+        plt.plot(merged["date"], merged["returns"], marker="o", label=f"{ticker} Daily Returns (%)")
+        plt.plot(merged["date"], merged["avg_vader"], marker="o", label="VADER Avg Sentiment")
+        plt.plot(merged["date"], merged["finbert_pos"], marker="o", label="FinBERT % Positive")
         plt.axhline(0, color="gray", linestyle="--")
-        plt.title(f"Sentiment vs {ticker} Returns (Business + Tech News)")
+        plt.title(f"Sentiment vs {name} Returns")
         plt.xlabel("Date")
         plt.ylabel("Returns / Sentiment")
         plt.legend()
         plt.xticks(rotation=45)
         plt.tight_layout()
+
         out_path = f"market_plots/sentiment_vs_{ticker.replace('^','')}.png"
         plt.savefig(out_path)
         plt.close()
         print(f"📈 Plot saved: {out_path}")
 
-    # --- Save correlation results ---
-    results_df = pd.DataFrame(results, columns=["ticker", "alignment", "sentiment", "r", "p"])
-    results_df.to_csv("market_sentiment_correlations.csv", index=False)
-    print("\n✅ Correlation results saved to market_sentiment_correlations.csv")
-
 
 if __name__ == "__main__":
-    analyze_sentiment_vs_market()
+    analyze_sentiment_vs_indexes()
