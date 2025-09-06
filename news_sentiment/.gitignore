@@ -28,3 +28,6 @@ venv/
 
 # Track headlines.csv for GitHub Actions
 !headlines.csv
+
+#Track market_sentiment_csv
+!market_sentiment_results.csv
