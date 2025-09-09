@@ -17,7 +17,7 @@ A Python-based pipeline for scraping financial, business, world, and technology 
 - **Market analysis (experimental)**: Correlates sentiment with major indexes (**S&P 500, NASDAQ, Dow Jones**) and explores lead-lag effects.  
 
 ---
-
+'''
 ## 📂 Project Structure
 news-sentiment-analyzer/
 │
@@ -32,7 +32,7 @@ news-sentiment-analyzer/
 ├── environment.yml # Conda environment spec
 ├── requirements.txt # Pip dependencies (alt to conda)
 └── .github/workflows/ # GitHub Actions automation
-
+'''
 ---
 
 ## ⚙️ Setup
