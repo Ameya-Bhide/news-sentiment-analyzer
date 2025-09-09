@@ -16,25 +16,6 @@ A Python-based pipeline for scraping financial, business, world, and technology 
   - Stored under `sentiment_plots/`.  
 - **Market analysis (experimental)**: Correlates sentiment with major indexes (**S&P 500, NASDAQ, Dow Jones**) and explores lead-lag effects.  
 
----
-'''
-## 📂 Project Structure
-news-sentiment-analyzer/
-│
-├── news_sentiment/ # Scrapy project
-│ ├── spiders/ # Multisource news spider
-│ ├── pipelines.py # Sentiment pipeline (VADER + FinBERT)
-│ ├── summarize_sentiment.py # Daily summaries & plots
-│ ├── analyze_market.py # Market correlation experiments
-│ └── headlines.csv # Growing dataset of headlines
-│
-├── feeds.json # List of RSS feeds
-├── environment.yml # Conda environment spec
-├── requirements.txt # Pip dependencies (alt to conda)
-└── .github/workflows/ # GitHub Actions automation
-'''
----
-
 ## ⚙️ Setup
 
 ### 1. Clone and enter project
