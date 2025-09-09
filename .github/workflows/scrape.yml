@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Pull Repo
         run: |
           git config user.name "github-actions"
@@ -19,8 +22,6 @@ jobs:
           git pull
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
