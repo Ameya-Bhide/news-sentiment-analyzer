@@ -31,3 +31,15 @@ venv/
 
 #Track market_sentiment_csv
 !market_sentiment_results.csv
+
+# CSV/analysis outputs (if you don’t want to track them)
+sentiment_plots/
+market_plots/
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
