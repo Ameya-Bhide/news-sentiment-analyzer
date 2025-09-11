@@ -60,10 +60,11 @@ def analyze_sentiment_vs_indexes(
         # Same-day
         for metric in ["avg_vader", "finbert_pos"]:
             sub = merged.dropna(subset=[metric, "returns"])
-            if len(sub) > 1:
+            n = len(sub)
+            if n > 1:
                 r, p = pearsonr(sub[metric], sub["returns"])
-                print(f"{metric} vs {ticker} returns: r = {r:.3f}, p = {p:.4f}")
-                results.append([ticker, name, 0, metric, r, p])
+                print(f"{metric} vs {ticker} returns: r = {r:.3f}, p = {p:.4f}, n = {n}")
+                results.append([ticker, name, 0, metric, r, p, n])
             else:
                 print(f"⚠️ Not enough data for {metric} vs {ticker} returns (same-day)")
 
@@ -72,10 +73,11 @@ def analyze_sentiment_vs_indexes(
             for metric in ["avg_vader", "finbert_pos"]:
                 if col in merged:
                     sub = merged.dropna(subset=[metric, col])
-                    if len(sub) > 1:
+                    n = len(sub)
+                    if n > 1:
                         r, p = pearsonr(sub[metric], sub[col])
-                        print(f"{metric} vs {ticker} returns +{lag} days: r = {r:.3f}, p = {p:.4f}")
-                        results.append([ticker, name, lag, metric, r, p])
+                        print(f"{metric} vs {ticker} returns +{lag} days: r = {r:.3f}, p = {p:.4f}, n = {n}")
+                        results.append([ticker, name, lag, metric, r, p, n])
                     else:
                         print(f"⚠️ Not enough data for {metric} vs {ticker} returns +{lag} days")
 
@@ -97,7 +99,10 @@ def analyze_sentiment_vs_indexes(
 
     # Save results table
     if results:
-        res_df = pd.DataFrame(results, columns=["Ticker", "Index", "Lag (days)", "Metric", "Correlation", "p-value"])
+        res_df = pd.DataFrame(
+            results,
+            columns=["Ticker", "Index", "Lag (days)", "Metric", "Correlation", "p-value", "Sample Size (n)"]
+        )
         res_df.to_csv("market_sentiment_results.csv", index=False)
         print("✅ Results saved to market_sentiment_results.csv")
 
