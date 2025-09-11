@@ -28,13 +28,15 @@ venv/
 
 # Track headlines.csv for GitHub Actions
 !headlines.csv
+!daily_summary.csv
 
 #Track market_sentiment_csv
 !market_sentiment_results.csv
 
 # CSV/analysis outputs (if you don’t want to track them)
-sentiment_plots/
-market_plots/
+news_sentiment/sentiment_plots/
+news_sentiment/market_plots/
+*.png
 
 # Node.js / Next.js
 node_modules/
