@@ -1,57 +1,37 @@
-import { useEffect, useState } from "react";
-import Papa from "papaparse";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Legend,
-  Tooltip,
-} from "chart.js";
-
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Tooltip);
+import { useState, useEffect } from "react";
+import SentimentChart from "../components/SentimentChart";
+import Filters from "../components/Filters";
 
 export default function Home() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
+
+  const fetchData = async (filters = {}) => {
+    const params = new URLSearchParams(filters).toString();
+    const res = await fetch(`http://localhost:4000/api/sentiment?${params}`);
+    const json = await res.json();
+
+    // convert date to readable format
+    const formatted = json.map(d => ({
+      ...d,
+      date: new Date(d.date).toISOString().split("T")[0],
+      avg_vader: parseFloat(d.avg_vader),
+      finbert_pos: parseFloat(d.finbert_pos),
+      finbert_neg: parseFloat(d.finbert_neg),
+      finbert_neu: parseFloat(d.finbert_neu),
+    }));
+
+    setData(formatted);
+  };
 
   useEffect(() => {
-    fetch("/api/summary")
-      .then((res) => res.json())
-      .then((json) => setData(json));
+    fetchData();
   }, []);
-
-  if (!data) return <p>Loading...</p>;
-
-  const chartData = {
-    labels: data.map((row) => row.date),
-    datasets: [
-      {
-        label: "Positive",
-        data: data.map((row) => parseFloat(row.finbert_pos)),
-        borderColor: "green",
-        fill: false,
-      },
-      {
-        label: "Negative",
-        data: data.map((row) => parseFloat(row.finbert_neg)),
-        borderColor: "red",
-        fill: false,
-      },
-      {
-        label: "Neutral",
-        data: data.map((row) => parseFloat(row.finbert_neu)),
-        borderColor: "gray",
-        fill: false,
-      },
-    ],
-  };
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>📊 News Sentiment Dashboard</h1>
-      <Line data={chartData} />
+      <h1>📊 News Sentiment Trends</h1>
+      <Filters onFilter={fetchData} />
+      <SentimentChart data={data} />
     </div>
   );
 }
