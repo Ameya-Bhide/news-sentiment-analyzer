@@ -1,37 +1,20 @@
-import { useState, useEffect } from "react";
 import SentimentChart from "../components/SentimentChart";
-import Filters from "../components/Filters";
 
 export default function Home() {
-  const [data, setData] = useState([]);
-
-  const fetchData = async (filters = {}) => {
-    const params = new URLSearchParams(filters).toString();
-    const res = await fetch(`http://localhost:4000/api/sentiment?${params}`);
-    const json = await res.json();
-
-    // convert date to readable format
-    const formatted = json.map(d => ({
-      ...d,
-      date: new Date(d.date).toISOString().split("T")[0],
-      avg_vader: parseFloat(d.avg_vader),
-      finbert_pos: parseFloat(d.finbert_pos),
-      finbert_neg: parseFloat(d.finbert_neg),
-      finbert_neu: parseFloat(d.finbert_neu),
-    }));
-
-    setData(formatted);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>📊 News Sentiment Trends</h1>
-      <Filters onFilter={fetchData} />
-      <SentimentChart data={data} />
-    </div>
+    <main style={{ padding: "2rem" }}>
+      <h1>📈 News Sentiment Dashboard</h1>
+      <h2>Overall</h2>
+      <SentimentChart />
+
+      <h2>Business</h2>
+      <SentimentChart category="business" />
+
+      <h2>World</h2>
+      <SentimentChart category="world" />
+
+      <h2>Technology</h2>
+      <SentimentChart category="technology" />
+    </main>
   );
 }

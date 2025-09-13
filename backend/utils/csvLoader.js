@@ -4,9 +4,11 @@ import csv from "csv-parser";
 
 export function loadCSV(filePath) {
   return new Promise((resolve, reject) => {
+    console.log("promise")
     const rows = [];
     const fullPath = path.resolve(filePath);
-
+    console.log(fullPath)
+    console.log(filePath)
     if (!fs.existsSync(fullPath)) {
       return reject(new Error(`CSV file not found: ${fullPath}`));
     }
