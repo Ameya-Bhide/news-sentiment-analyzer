@@ -1,5 +1,5 @@
 // pages/api/sentiment.js
-import { loadCSV } from "../../../utils/csvLoader.js";
+import { loadCSV } from "../../utils/csvloader.js";
 
 const SENTIMENT_CSV = "news_sentiment/daily_summary.csv";
 
