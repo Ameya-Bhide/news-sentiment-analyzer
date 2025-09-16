@@ -12,7 +12,7 @@ export default function SentimentChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = "http://localhost:4000/api/sentiment";
+        let url = "/api/sentiment"; // ✅ relative path for Next.js/Vercel
         const params = [];
         if (category) params.push(`category=${category}`);
         if (start) params.push(`start=${start}`);

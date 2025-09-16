@@ -1,4 +1,3 @@
-// components/MarketChart.js
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -8,10 +7,10 @@ export default function MarketChart({ ticker }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(`http://localhost:4000/api/market?ticker=${encodeURIComponent(ticker)}`);
+        const res = await fetch(`/api/market?ticker=${encodeURIComponent(ticker)}`); // ✅ relative path
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
         const json = await res.json();
 
-        // Example: filter correlations for this ticker
         const parsed = json.map(d => ({
           metric: `${d.Metric} (lag ${d["Lag (days)"]})`,
           correlation: parseFloat(d.Correlation),
@@ -47,4 +46,3 @@ const CustomLegend = () => {
     </div>
   );
 };
-
