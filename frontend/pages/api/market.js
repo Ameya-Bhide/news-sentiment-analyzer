@@ -1,5 +1,5 @@
 // pages/api/market.js
-import { loadCSV } from "../../utils/csvloader.js";
+import { loadCSV } from "./csvLoader.js";
 
 const MARKET_CSV = "news_sentiment/market_sentiment_results.csv";
 

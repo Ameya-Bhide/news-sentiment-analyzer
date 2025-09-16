@@ -1,5 +1,5 @@
 import express from "express";
-import { loadCSV } from "../utils/csvloader.js";
+import { loadCSV } from "../../utils/csvloader.js";
 
 const router = express.Router();
 const MARKET_CSV = "../news_sentiment/market_sentiment_results.csv";
