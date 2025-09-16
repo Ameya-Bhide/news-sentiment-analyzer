@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { loadCSV } from "../utils/csvLoader.js";
+import { loadCSV } from "../utils/csvloader.js";
 
 // const router = express.Router();
 
