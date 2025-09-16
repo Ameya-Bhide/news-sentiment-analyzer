@@ -2,22 +2,47 @@ import SentimentChart from "../components/SentimentChart";
 
 export default function Home() {
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1 className="text-3x1 font-bold underline">
-        Hello World
-      </h1>
-      <h1>📈 News Sentiment Dashboard</h1>
-      <h2>Overall</h2>
-      <SentimentChart />
+    <div className="space-y-10">
+      {/* Page header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-extrabold text-gray-900">
+          📈 News Sentiment Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Visualizing daily sentiment trends across categories
+        </p>
+      </div>
 
-      <h2>Business</h2>
-      <SentimentChart category="business" />
+      {/* Charts section */}
+      <div className="grid gap-10">
+        <section>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Overall</h2>
+          <div className="bg-white shadow rounded-lg p-4">
+            <SentimentChart />
+          </div>
+        </section>
 
-      <h2>World</h2>
-      <SentimentChart category="world" />
+        <section>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Business</h2>
+          <div className="bg-white shadow rounded-lg p-4">
+            <SentimentChart category="business" />
+          </div>
+        </section>
 
-      <h2>Technology</h2>
-      <SentimentChart category="technology" />
-    </main>
+        <section>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">World</h2>
+          <div className="bg-white shadow rounded-lg p-4">
+            <SentimentChart category="world" />
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Technology</h2>
+          <div className="bg-white shadow rounded-lg p-4">
+            <SentimentChart category="technology" />
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }
