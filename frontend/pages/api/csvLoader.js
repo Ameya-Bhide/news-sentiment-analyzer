@@ -25,7 +25,7 @@ export function loadCSV(filePath) {
 }
   */
 
-async function loadRemoteCSV(url) {
+export async function loadRemoteCSV(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.status}`);
   const text = await res.text();
