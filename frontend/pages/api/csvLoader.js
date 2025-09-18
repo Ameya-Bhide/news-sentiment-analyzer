@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
-import fetch from "node-fetch";
 import { Readable } from "stream";
 
+
+/*
 export function loadCSV(filePath) {
   return new Promise((resolve, reject) => {
     console.log("promise")
@@ -22,6 +23,7 @@ export function loadCSV(filePath) {
       .on("error", (err) => reject(err));
   });
 }
+  */
 
 async function loadRemoteCSV(url) {
   const res = await fetch(url);
