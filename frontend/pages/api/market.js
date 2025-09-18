@@ -1,12 +1,12 @@
 // pages/api/market.js
-import { loadCSV } from "./csvLoader.js";
+import { loadRemoteCSV } from "./csvLoader.js";
 
-const MARKET_CSV = "news_sentiment/market_sentiment_results.csv";
+const MARKET_CSV = "https://wutelclgudapnuyrucfn.supabase.co/storage/v1/object/public/sentiment-data/market_sentiment_results.csv";
 
 export default async function handler(req, res) {
   try {
     const { ticker, lag } = req.query;
-    let rows = await loadCSV(MARKET_CSV);
+    let rows = await loadRemoteCSV(MARKET_CSV);
 
     if (ticker) {
       rows = rows.filter(r => r.Ticker === ticker);
