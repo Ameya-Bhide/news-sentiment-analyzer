@@ -25,21 +25,21 @@ export default function Home() {
         <section>
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Business</h2>
           <div className="bg-white shadow rounded-lg p-4">
-            <SentimentChart category="business" />
+            <SentimentChart defaultCategory="business" />
           </div>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4 text-gray-800">World</h2>
           <div className="bg-white shadow rounded-lg p-4">
-            <SentimentChart category="world" />
+            <SentimentChart defaultCategory="world" />
           </div>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Technology</h2>
           <div className="bg-white shadow rounded-lg p-4">
-            <SentimentChart category="technology" />
+            <SentimentChart defaultCategory="technology" />
           </div>
         </section>
       </div>

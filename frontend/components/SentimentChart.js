@@ -3,9 +3,9 @@ import {
   LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
 
-export default function SentimentChart() {
+export default function SentimentChart({ defaultCategory = "" }) {
   const [data, setData] = useState([]);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(defaultCategory);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
 
