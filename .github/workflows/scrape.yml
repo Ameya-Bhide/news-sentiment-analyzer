@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 */6 * * *"   # runs every 6 hours
+
 permissions:
   contents: write
 
@@ -43,12 +44,24 @@ jobs:
           cd news_sentiment
           scrapy crawl multinews
 
-      - name: Commit and push headlines.csv
+      # 🚀 Upload CSVs to Supabase
+      - name: Upload headlines.csv to Supabase
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add news_sentiment/headlines.csv
-          git commit -m "Update headlines.csv [skip ci]" || echo "No changes to commit"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -X POST "https://$SUPABASE_PROJECT.supabase.co/storage/v1/object/sentiment-data/headlines.csv" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: text/csv" \
+            --data-binary @"news_sentiment/headlines.csv"
+
+      - name: Upload daily_summary.csv to Supabase
+        run: |
+          curl -X POST "https://$SUPABASE_PROJECT.supabase.co/storage/v1/object/sentiment-data/daily_summary.csv" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: text/csv" \
+            --data-binary @"news_sentiment/daily_summary.csv"
+
+      - name: Upload market_sentiment_results.csv to Supabase
+        run: |
+          curl -X POST "https://$SUPABASE_PROJECT.supabase.co/storage/v1/object/sentiment-data/market_sentiment_results.csv" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: text/csv" \
+            --data-binary @"news_sentiment/market_sentiment_results.csv"
