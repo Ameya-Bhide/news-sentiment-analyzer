@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install scrapy vaderSentiment torch torchvision torchaudio transformers pandas matplotlib yfinance
+          pip install scrapy vaderSentiment torch torchvision torchaudio transformers pandas matplotlib yfinance scipy
 
       # --- Scrape headlines ---
       - name: Run spider
