@@ -13,6 +13,17 @@ export default function Home() {
         </p>
       </div>
 
+      <div className="bg-white shadow-md rounded-xl p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-2">📊 Sentiment Trends</h2>
+        <p className="text-gray-600 text-sm">
+          The charts show average daily sentiment of news headlines, using two models: 
+          <span className="font-semibold"> VADER</span> (general sentiment) and 
+          <span className="font-semibold"> FinBERT</span> (finance-specific, with % positive/negative/neutral).
+          Use the filters below to explore by category and date range.
+        </p>
+      </div>
+
+
       {/* Charts section */}
       <div className="grid gap-10">
         <section>

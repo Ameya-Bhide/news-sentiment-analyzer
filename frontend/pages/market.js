@@ -14,6 +14,17 @@ export default function Market() {
         </p>
       </div>
 
+      <div className="bg-white shadow-md rounded-xl p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-2">📈 Market Correlations</h2>
+        <p className="text-gray-600 text-sm">
+          The charts show correlations between news sentiment metrics and 
+          <span className="font-semibold"> {ticker}</span> index returns.
+          Bars represent correlation values (from -1 to 1) for same-day and lagged returns.
+        </p>
+      </div>
+
+
+
       {/* Charts section */}
       <div className="grid gap-10">
         <section>
