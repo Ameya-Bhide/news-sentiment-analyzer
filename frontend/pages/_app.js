@@ -26,7 +26,7 @@ export default function MyApp({ Component, pageProps }) {
 
       {/* Footer */}
       <footer className="bg-gray-100 text-center py-4 mt-8 text-sm text-gray-600 border-t">
-        Built with ❤️ using Next.js + Tailwind
+        Built by Ameya using Next.js + Tailwind
       </footer>
     </div>
   )
