@@ -1,24 +1,37 @@
-# 📊 News Sentiment Analyzer
+# 📈 News Sentiment Dashboard
 
-A Python-based pipeline for scraping financial, business, world, and technology news from multiple sources, analyzing sentiment with **VADER** and **FinBERT**, and exploring potential links to market movements.  
+A web app that tracks news sentiment across multiple categories (Business, World, Technology) and compares it to major stock indexes (S&P 500, NASDAQ, Dow Jones).  
+
+🔗 **Live Dashboard:** [View on Vercel](https://sentivest.vercel.app/)  
 
 ---
 
-## 🚀 Features
-- **Multi-source scraping**: Pulls headlines from Reuters, BBC, CNN, The Guardian, NPR, NYTimes, MarketWatch, TechCrunch, and more (via RSS feeds).  
-- **Sentiment analysis**:  
-  - **VADER**: General-purpose sentiment scoring (-1 to +1).  
-  - **FinBERT**: Financial domain-specific sentiment classifier (Positive / Negative / Neutral).  
-- **Daily summaries**: Aggregates headline sentiment per day and category (business, world, technology).  
-- **Visualizations**:  
-  - Overall daily sentiment trends.  
-  - Category-specific trends (business, world, technology).  
-  - Stored under `sentiment_plots/`.  
-- **Market analysis (experimental)**: Correlates sentiment with major indexes (**S&P 500, NASDAQ, Dow Jones**) and explores lead-lag effects.  
+## ✨ Features
+- Aggregates news headlines every 6 hours with a Scrapy spider  
+- Analyzes sentiment with **VADER** and **FinBERT**  
+- Stores processed data in **Supabase** (CSV-based)  
+- Interactive charts built with **Next.js + Recharts + Tailwind CSS**  
+- Compare sentiment trends against market returns  
 
-## ⚙️ Setup
+---
 
-### 1. Clone and enter project
-```bash
-git clone https://github.com/Ameya-Bhide/news-sentiment-analyzer.git
-cd news-sentiment-analyzer
+## 🛠️ Tech Stack
+- **Frontend:** Next.js, Tailwind CSS, Recharts  
+- **Backend / APIs:** Next.js API routes, Supabase storage  
+- **Data Pipeline:** Scrapy, Python (VADER, FinBERT), GitHub Actions  
+
+---
+
+## 📂 Repository
+This repo contains both the data pipeline and the dashboard frontend:  
+- `news_sentiment/` → Python Scrapy spider + sentiment analysis  
+- `frontend/` → Next.js dashboard  
+- 'backend/' → Express backend, now redundant with Vercel deployment structure
+---
+
+## 🚀 Deployment
+- **Frontend:** Vercel (Next.js)  
+- **Data Storage:** Supabase Public Bucket  
+- **Automation:** GitHub Actions (runs scraper every 6 hours)  
+
+---
